@@ -433,6 +433,12 @@ tbody tr:hover .sticky{background:var(--card2)}
 
 <!-- ======= AGENTS ======= -->
 <div class="tab-content" id="tab-agents">
+  <div class="kpi-row" style="margin-bottom:var(--g)">
+    <div class="kpi bl"><div class="kpi-lbl">Total Agents</div><div class="kpi-val" id="agk-count">-</div></div>
+    <div class="kpi cy"><div class="kpi-lbl">Total Calls</div><div class="kpi-val" id="agk-calls">-</div></div>
+    <div class="kpi or"><div class="kpi-lbl">Avg Answer Rate</div><div class="kpi-val" id="agk-rate">-</div></div>
+    <div class="kpi pu"><div class="kpi-lbl">Avg Sentiment</div><div class="kpi-val" id="agk-sent">-</div><div class="kpi-sub">out of 5</div></div>
+  </div>
   <div class="tcard">
     <h3>Agent Performance <span class="cnt" id="ag-cnt"></span></h3>
     <div class="tbl-wrap"><table>
@@ -1112,7 +1118,7 @@ document.addEventListener('click',e=>{
 function renderAll(){
   renderKPIs();
   if(chartJsReady) buildCharts();
-  buildAgData();renderAgTable();
+  buildAgData();renderAgTable();renderAgKpis();
   if(chartJsReady) buildAgCharts();
   renderAnalysis();
   PG=0;renderLog();
@@ -1281,6 +1287,14 @@ function buildAgData(){
 }
 
 function sa(col){if(AG_SORT.col===col)AG_SORT.dir*=-1;else{AG_SORT.col=col;AG_SORT.dir=-1}renderAgTable()}
+
+function renderAgKpis(){
+  setText('agk-count',AG.length);
+  setText('agk-calls',Nfmt(AG.reduce((s,a)=>s+a.total,0)));
+  setText('agk-rate',AG.length?(AG.reduce((s,a)=>s+a.ans_rate,0)/AG.length).toFixed(1)+'%':'-');
+  const sented=AG.filter(a=>a.avg_sent!=null);
+  setText('agk-sent',sented.length?(sented.reduce((s,a)=>s+a.avg_sent,0)/sented.length).toFixed(1)+'★':'-');
+}
 
 function renderAgTable(){
   const langFilter=(document.getElementById('f-lang')?.value||'').trim();
