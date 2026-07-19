@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('theme3cx')||'dark')}catch(e){}</script>
 <title>3CX Manual Dashboard</title>
 <style>
 :root{
@@ -11,6 +12,10 @@
   --blue:#58a6ff;--green:#3fb950;--orange:#d29922;--red:#f85149;
   --purple:#bc8cff;--cyan:#39d353;--yellow:#e3b341;--pink:#ff9bce;
   --r:10px;--g:14px;
+}
+:root[data-theme="light"]{
+  --bg:#f6f8fa;--card:#ffffff;--card2:#eef1f4;--border:#d0d7de;
+  --text:#1f2328;--muted:#57606a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px}
@@ -254,6 +259,7 @@ tbody tr:hover .sticky{background:var(--card2)}
       + Add CSV
       <input type="file" id="csv-add" multiple accept="*" style="position:absolute;inset:0;opacity:0;cursor:pointer">
     </label>
+    <button class="btn" id="theme-toggle" onclick="toggleTheme()">&#9728;</button>
     <button class="btn" onclick="openAgentAdmin()">&#9881; Agents</button>
     <button class="btn btn-primary" onclick="exportCSV()">Export CSV</button>
     <button class="btn" onclick="exportShareable()" style="background:rgba(88,166,255,.18);border-color:#58a6ff;color:#58a6ff;font-weight:700">&#128257; Share to Management</button>
@@ -599,6 +605,23 @@ let HM_MODE='total';
 let FT=null;
 let chartJsReady=false;
 let ABANDONED_ASSIGNMENTS={};
+
+// ============================================================
+//  THEME
+// ============================================================
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('theme3cx',t);
+  const btn=document.getElementById('theme-toggle');
+  if(btn) btn.innerHTML=t==='light'?'&#127769;':'&#9728;';
+  if(window.Chart){
+    Chart.defaults.color=t==='light'?'#57606a':'#8b949e';
+    Chart.defaults.borderColor=t==='light'?'#d0d7de':'#30363d';
+    if(RAW.length) renderAll();
+  }
+}
+function toggleTheme(){applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light')}
+document.addEventListener('DOMContentLoaded',()=>applyTheme(document.documentElement.getAttribute('data-theme')||'dark'));
 
 // ============================================================
 //  TOAST
